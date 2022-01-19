@@ -1,0 +1,23 @@
+FROM nginx:alpine
+
+MAINTAINER Adrian Blasiak <grano22@outlook.com>
+
+RUN apk add --no-cache build-base libssh2-dev libssh2 autoconf php8 php8-fpm php8-opcache
+
+RUN apk add php8-iconv php8-ctype php8-session php8-dom php8-tokenizer
+
+USER root
+
+RUN apk add --no-cache su-exec
+
+COPY ./build/default.conf /etc/nginx/conf.d/
+
+COPY ./build/www.conf /etc/php8/php-fpm.d/www.conf
+
+RUN su-exec root adduser -H -D www-data -G www-data
+
+WORKDIR /var/www/html
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+CMD /usr/sbin/php-fpm8 -D -F -R & nginx -g "daemon off;" && fg
