@@ -6,6 +6,8 @@ RUN apk add --no-cache build-base libssh2-dev libssh2 autoconf php8 php8-fpm php
 
 RUN apk add php8-iconv php8-ctype php8-session php8-dom php8-tokenizer
 
+RUN apk add gnu-libiconv php8-cli php8-phar php8-mbstring openssl-dev php8-openssl php8-xml php8-pdo 
+
 USER root
 
 RUN apk add --no-cache su-exec
@@ -15,6 +17,8 @@ COPY ./build/default.conf /etc/nginx/conf.d/
 COPY ./build/www.conf /etc/php8/php-fpm.d/www.conf
 
 RUN su-exec root adduser -H -D www-data -G www-data
+
+RUN ln -s /usr/bin/php8 /usr/bin/php
 
 WORKDIR /var/www/html
 
